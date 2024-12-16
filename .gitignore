@@ -1,0 +1,6 @@
+.gitignore
+.vscode
+.editorconfig
+*.swp
+build
+
