@@ -17,10 +17,7 @@ std::optional<Path> BFSGraphTraverser::GeneratePath(
         return std::nullopt;
     if (start == end) return std::nullopt;
 
-    Path path;
-    path.start = start;
-    path.destination = end;
-    path = GeneratePathByBFS(start, end);
+    Path path = GeneratePathByBFS(start, end);
     if (path.path.size() == 0) return std::nullopt;
     return path;
 }
@@ -64,6 +61,8 @@ Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
     }
 
     Path path;
+    path.start = start;
+    path.destination = end;
     if (path_found) {
         const auto end_index = ToFlatIndex(end, width);
         auto* next = &cell_grid[end_index];
