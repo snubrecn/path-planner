@@ -1,5 +1,7 @@
 #include "bfs_graph_traverser.h"
 
+#include <iostream>
+
 #include "util.h"
 
 namespace path_planner {
@@ -70,7 +72,10 @@ Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
             path.path.push_back(next->position);
             next = next->parent;
         }
+        std::cerr << "path length: " << path.path.size() << std::endl;
+        return path;
     }
+    std::cerr << "Path not found by BFS\n";
     return path;
 }
 
