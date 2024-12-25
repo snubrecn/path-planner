@@ -16,6 +16,7 @@ class TestCase {
              const Eigen::Vector2i& end);
     void SetObstaclePoints(const std::vector<Eigen::Vector2i>& obstacle_points);
     void SetPath(const std::deque<Eigen::Vector2i>& path);
+    void SetVisitQueue(const std::deque<Eigen::Vector2i>& visit_queue);
 
     path_planner::Map GetMap();
     Eigen::Vector2i GetStart();
@@ -27,6 +28,7 @@ class TestCase {
     Eigen::Vector2i end_;
     path_planner::Map map_;
     cv::Mat visualization_map_;
+    cv::Mat visit_queue_visualization_map_;
 };
 
 };  // namespace test_case

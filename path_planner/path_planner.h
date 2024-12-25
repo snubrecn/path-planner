@@ -34,6 +34,7 @@ class PathPlanner {
     void SetMap(const Map& map);
     std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
                                      const Eigen::Vector2i& end);
+    std::deque<Eigen::Vector2i> GetVisitQueue();
 
    private:
     const Parameters parameters_;

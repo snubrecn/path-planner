@@ -27,6 +27,10 @@ std::optional<Path> ASTARGraphTraverser::GeneratePath(
     return path;
 }
 
+std::deque<Eigen::Vector2i> ASTARGraphTraverser::GetVisitQueue() {
+    return visit_queue_;
+}
+
 std::vector<Neighbor> ASTARGraphTraverser::GenerateNeighbors() {
     std::vector<Neighbor> neighbor_positions;
     for (auto dx = -1; dx <= 1; ++dx) {
@@ -64,6 +68,7 @@ Path ASTARGraphTraverser::GeneratePathByASTAR(const Eigen::Vector2i& start,
         auto current_index = ToFlatIndex(current_cell.position, width);
 
         if (closed_list.count(current_index)) continue;
+        visit_queue_.push_back(current_cell.position);
         closed_list.emplace(current_index);
 
         const auto& current_position = current_cell.position;

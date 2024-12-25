@@ -2,6 +2,7 @@
 #define PATH_PLANNER_ASTAR_GRAPH_TRAVERSER_H_
 
 #include <cinttypes>
+#include <deque>
 #include <vector>
 
 #include "graph_traverser_interface.h"
@@ -35,6 +36,7 @@ class ASTARGraphTraverser : public GraphTraverserInterface {
     void SetMap(const Map& map) override;
     std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
                                      const Eigen::Vector2i& end) override;
+    std::deque<Eigen::Vector2i> GetVisitQueue() override;
 
    private:
     std::vector<Neighbor> GenerateNeighbors();
@@ -42,6 +44,7 @@ class ASTARGraphTraverser : public GraphTraverserInterface {
                              const Eigen::Vector2i& end);
     std::vector<Neighbor> neighbors_;
     Map map_;
+    std::deque<Eigen::Vector2i> visit_queue_;
 };
 
 }  // namespace astar

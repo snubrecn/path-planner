@@ -27,6 +27,7 @@ class GraphTraverserInterface {
     virtual void SetMap(const Map& map) = 0;
     virtual std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
                                              const Eigen::Vector2i& end) = 0;
+    virtual std::deque<Eigen::Vector2i> GetVisitQueue() = 0;
 };
 }  // namespace graph_traverser
 }  // namespace path_planner

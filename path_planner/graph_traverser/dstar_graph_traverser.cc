@@ -15,6 +15,8 @@ std::optional<Path> DSTARGraphTraverser::GeneratePath(
     return std::nullopt;
 }
 
+std::deque<Eigen::Vector2i> DSTARGraphTraverser::GetVisitQueue() { return {}; }
+
 }  // namespace dstar
 }  // namespace graph_traverser
 };  // namespace path_planner

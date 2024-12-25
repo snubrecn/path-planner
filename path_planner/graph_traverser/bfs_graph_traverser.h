@@ -19,11 +19,13 @@ class BFSGraphTraverser : public GraphTraverserInterface {
     void SetMap(const Map& map) override;
     std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
                                      const Eigen::Vector2i& end) override;
+    std::deque<Eigen::Vector2i> GetVisitQueue() override;
 
    private:
     Path GeneratePathByBFS(const Eigen::Vector2i& start,
                            const Eigen::Vector2i& end);
     Map map_;
+    std::deque<Eigen::Vector2i> visit_queue_;
 };
 
 }  // namespace bfs

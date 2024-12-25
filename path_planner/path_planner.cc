@@ -48,4 +48,9 @@ std::optional<Path> PathPlanner::GeneratePath(const Eigen::Vector2i& start,
     return std::nullopt;
 }
 
+std::deque<Eigen::Vector2i> PathPlanner::GetVisitQueue() {
+    if (graph_traverser_) return graph_traverser_->GetVisitQueue();
+    return {};
+}
+
 };  // namespace path_planner

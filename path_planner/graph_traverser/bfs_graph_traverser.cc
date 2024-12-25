@@ -24,6 +24,10 @@ std::optional<Path> BFSGraphTraverser::GeneratePath(
     return path;
 }
 
+std::deque<Eigen::Vector2i> BFSGraphTraverser::GetVisitQueue() {
+    return visit_queue_;
+}
+
 Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
                                           const Eigen::Vector2i& end) {
     const auto width = map_.dimension.x();
@@ -42,6 +46,7 @@ Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
     while (!queue.empty()) {
         const auto pos = queue.front();
         queue.pop_front();
+        visit_queue_.push_back(pos);
         const auto flat_index = ToFlatIndex(pos, width);
 
         auto neighbor_positions = GenerateNeighborPositions(pos);
