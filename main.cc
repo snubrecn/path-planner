@@ -1,3 +1,4 @@
+#include <chrono>
 #include <deque>
 #include <iostream>
 
@@ -17,11 +18,38 @@ int main(void) {
     tc_1.SetObstaclePoints(obstacle_points);
 
     path_planner::Parameters parameters;
+    parameters.mode = path_planner::Mode::ASTAR;
     path_planner::PathPlanner path_planner(parameters);
     path_planner.SetMap(tc_1.GetMap());
+    auto ts = std::chrono::steady_clock::now();
     auto path = path_planner.GeneratePath(tc_1.GetStart(), tc_1.GetEnd());
-    if (path.has_value()) tc_1.SetPath(path->path);
+    auto te = std::chrono::steady_clock::now();
+    auto duration = (te - ts).count() * 1e-6;
+    std::cerr << "tc 1 path generation took " << duration << " ms\n";
+    if (path.has_value()) {
+        tc_1.SetPath(path->path);
+        tc_1.SetVisitQueue(path_planner.GetVisitQueue());
+    }
     tc_1.VisualizeMap();
+
+    test_case::TestCase tc_2(1000, 500, Eigen::Vector2i(400, 250),
+                             Eigen::Vector2i(800, 250));
+    obstacle_points.clear();
+    for (auto x = 200; x < 300; ++x)
+        obstacle_points.push_back(Eigen::Vector2i(500, x));
+    tc_2.SetObstaclePoints(obstacle_points);
+
+    path_planner.SetMap(tc_2.GetMap());
+    ts = std::chrono::steady_clock::now();
+    path = path_planner.GeneratePath(tc_2.GetStart(), tc_2.GetEnd());
+    te = std::chrono::steady_clock::now();
+    duration = (te - ts).count() * 1e-6;
+    std::cerr << "tc 2 path generation took " << duration << " ms\n";
+    if (path.has_value()) {
+        tc_2.SetPath(path->path);
+        tc_2.SetVisitQueue(path_planner.GetVisitQueue());
+    }
+    tc_2.VisualizeMap();
 
     return 0;
 }
