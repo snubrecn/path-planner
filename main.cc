@@ -51,5 +51,20 @@ int main(void) {
     }
     tc_2.VisualizeMap();
 
+    test_case::TestCase tc_3(500, 500, Eigen::Vector2i(30, 40),
+                             Eigen::Vector2i(430, 370));
+    tc_3.SetRandomObstaclePoints(100, 3);
+    path_planner.SetMap(tc_3.GetMap());
+    ts = std::chrono::steady_clock::now();
+    path = path_planner.GeneratePath(tc_3.GetStart(), tc_3.GetEnd());
+    te = std::chrono::steady_clock::now();
+    duration = (te - ts).count() * 1e-6;
+    std::cerr << "tc 3 path generation took " << duration << " ms\n";
+    if (path.has_value()) {
+        tc_3.SetPath(path->path);
+        tc_3.SetVisitQueue(path_planner.GetVisitQueue());
+    }
+    tc_3.VisualizeMap();
+
     return 0;
 }
