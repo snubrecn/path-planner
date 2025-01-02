@@ -1,5 +1,12 @@
 #include "test_case.h"
 
+#include <random>
+
+namespace {
+std::random_device rd;
+std::mt19937 gen(rd());
+}  // namespace
+
 namespace test_case {
 TestCase::TestCase(const int width, const int height,
                    const Eigen::Vector2i& start, const Eigen::Vector2i& end)
@@ -30,6 +37,40 @@ void TestCase::SetObstaclePoints(
     }
 }
 
+void TestCase::SetRandomObstaclePoints(const int num_obstacles,
+                                       const int inflation_thickness) {
+    auto max_range = map_.dimension.x() * map_.dimension.y();
+    std::uniform_int_distribution<int> dist(0, max_range);
+    auto to_grid_index = [this](const int flat_index) {
+        return Eigen::Vector2i(flat_index % map_.dimension.x(),
+                               flat_index / map_.dimension.x());
+    };
+    for (auto num = 0; num < num_obstacles; ++num) {
+        auto flat_index = dist(gen);
+        Eigen::Vector2i obstacle_point = to_grid_index(flat_index);
+        if (obstacle_point == start_ || obstacle_point == end_) continue;
+        for (auto dx = -inflation_thickness; dx <= inflation_thickness; ++dx) {
+            for (auto dy = -inflation_thickness; dy <= inflation_thickness;
+                 ++dy) {
+                Eigen::Vector2i neighbor_position =
+                    obstacle_point + Eigen::Vector2i(dx, dy);
+                if (neighbor_position.x() < 0 ||
+                    neighbor_position.x() > map_.dimension.x() ||
+                    neighbor_position.y() < 0 ||
+                    neighbor_position.y() >= map_.dimension.y())
+                    continue;
+                map_.grid[flat_index] = false;
+                visualization_map_.at<cv::Vec3b>(neighbor_position.y(),
+                                                 neighbor_position.x()) =
+                    cv::Vec3b(0, 0, 0);
+                visit_queue_visualization_map_.at<cv::Vec3b>(
+                    neighbor_position.y(), neighbor_position.x()) =
+                    cv::Vec3b(0, 0, 0);
+            }
+        }
+    }
+}
+
 void TestCase::SetPath(const std::deque<Eigen::Vector2i>& path) {
     for (const auto& waypoint : path)
         visualization_map_.at<cv::Vec3b>(waypoint.y(), waypoint.x()) =
@@ -57,6 +98,7 @@ void TestCase::SetVisitQueue(const std::deque<Eigen::Vector2i>& visit_queue) {
 path_planner::Map TestCase::GetMap() { return map_; }
 
 Eigen::Vector2i TestCase::GetStart() { return start_; }
+
 Eigen::Vector2i TestCase::GetEnd() { return end_; }
 
 void TestCase::VisualizeMap(const double resize_factor) {

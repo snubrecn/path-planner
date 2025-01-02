@@ -15,6 +15,8 @@ class TestCase {
     TestCase(const int width, const int height, const Eigen::Vector2i& start,
              const Eigen::Vector2i& end);
     void SetObstaclePoints(const std::vector<Eigen::Vector2i>& obstacle_points);
+    void SetRandomObstaclePoints(const int num_obstacles,
+                                 const int inflation_thickness = 1);
     void SetPath(const std::deque<Eigen::Vector2i>& path);
     void SetVisitQueue(const std::deque<Eigen::Vector2i>& visit_queue);
 
