@@ -8,12 +8,12 @@ namespace graph_traverser {
 namespace dstar {
 
 class DSTARGraphTraverser : public GraphTraverserInterface {
-   public:
-    DSTARGraphTraverser();
-    void SetMap(const Map& map) override;
-    std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
-                                     const Eigen::Vector2i& end) override;
-    std::deque<Eigen::Vector2i> GetVisitQueue() override;
+ public:
+  DSTARGraphTraverser();
+  void SetMap(const Map& map) override;
+  std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
+                                   const Eigen::Vector2i& end) override;
+  std::deque<Eigen::Vector2i> GetVisitQueue() override;
 };
 
 }  // namespace dstar

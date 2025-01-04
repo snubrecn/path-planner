@@ -8,24 +8,24 @@ namespace graph_traverser {
 namespace bfs {
 
 struct Cell {
-    Eigen::Vector2i position;
-    bool visit{false};
-    Cell* parent{nullptr};
+  Eigen::Vector2i position;
+  bool visit{false};
+  Cell* parent{nullptr};
 };
 
 class BFSGraphTraverser : public GraphTraverserInterface {
-   public:
-    BFSGraphTraverser();
-    void SetMap(const Map& map) override;
-    std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
-                                     const Eigen::Vector2i& end) override;
-    std::deque<Eigen::Vector2i> GetVisitQueue() override;
+ public:
+  BFSGraphTraverser();
+  void SetMap(const Map& map) override;
+  std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
+                                   const Eigen::Vector2i& end) override;
+  std::deque<Eigen::Vector2i> GetVisitQueue() override;
 
-   private:
-    Path GeneratePathByBFS(const Eigen::Vector2i& start,
-                           const Eigen::Vector2i& end);
-    Map map_;
-    std::deque<Eigen::Vector2i> visit_queue_;
+ private:
+  Path GeneratePathByBFS(const Eigen::Vector2i& start,
+                         const Eigen::Vector2i& end);
+  Map map_;
+  std::deque<Eigen::Vector2i> visit_queue_;
 };
 
 }  // namespace bfs

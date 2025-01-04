@@ -11,23 +11,23 @@ namespace path_planner {
 namespace graph_traverser {
 
 struct Map {
-    Eigen::Vector2i dimension;
-    std::vector<bool> grid;  // true: freespace, false: occupied
+  Eigen::Vector2i dimension;
+  std::vector<bool> grid;  // true: freespace, false: occupied
 };
 
 struct Path {
-    Eigen::Vector2i start;
-    Eigen::Vector2i destination;
-    std::deque<Eigen::Vector2i> path;
+  Eigen::Vector2i start;
+  Eigen::Vector2i destination;
+  std::deque<Eigen::Vector2i> path;
 };
 
 class GraphTraverserInterface {
-   public:
-    GraphTraverserInterface() {}
-    virtual void SetMap(const Map& map) = 0;
-    virtual std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
-                                             const Eigen::Vector2i& end) = 0;
-    virtual std::deque<Eigen::Vector2i> GetVisitQueue() = 0;
+ public:
+  GraphTraverserInterface() {}
+  virtual void SetMap(const Map& map) = 0;
+  virtual std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
+                                           const Eigen::Vector2i& end) = 0;
+  virtual std::deque<Eigen::Vector2i> GetVisitQueue() = 0;
 };
 }  // namespace graph_traverser
 }  // namespace path_planner
