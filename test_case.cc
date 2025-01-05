@@ -204,6 +204,7 @@ void TestCase::VisualizeMap(const double resize_factor) {
   cv::imshow("path_planning_result", image);
   cv::imshow("clearance band", clearance_band_image);
   cv::waitKey(0);
+  cv::imwrite("clearance_band.png", clearance_band_image);
 }
 
 };  // namespace test_case

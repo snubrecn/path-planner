@@ -13,7 +13,7 @@ int main(void) {
 
   test_case::TestCase tc_3(1200, 1200, Eigen::Vector2i(130, 140),
                            Eigen::Vector2i(1090, 953));
-  tc_3.SetRandomObstaclePoints(400, 20);
+  tc_3.LoadMapTexture("map_texture.txt");
   path_planner.SetMap(tc_3.GetMap());
   auto path = path_planner.GeneratePath(tc_3.GetStart(), tc_3.GetEnd());
   if (path.has_value()) {
@@ -21,7 +21,7 @@ int main(void) {
     tc_3.SetVisitQueue(path_planner.GetVisitQueue());
     tc_3.SetClearanceBandCells(path_planner.GetClearanceBandCells(),
                                parameters.max_clearance);
-    tc_3.VisualizeMap(0.5);
+    tc_3.VisualizeMap();
   }
 
   return 0;

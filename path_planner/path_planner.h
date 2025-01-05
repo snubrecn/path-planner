@@ -36,8 +36,18 @@ class PathPlanner {
              static_cast<uint64_t>(position.y());
     }
   };
+
+  struct PositionCompare {
+    bool operator()(const Eigen::Vector2i& lhs,
+                    const Eigen::Vector2i& rhs) const {
+      return (lhs.x() < rhs.x()) ||
+             ((!(rhs.x() < lhs.x())) && (lhs.y() < rhs.y()));
+    }
+  };
   std::unordered_map<Eigen::Vector2i, float, PositionHash>
   GenerateClearanceBand(const Path& path, const float max_clearance);
+  std::unordered_map<Eigen::Vector2i, float, PositionHash>
+  NaivelyGenerateClearanceBand(const Path& path, const float max_clearance);
   std::vector<Eigen::Vector2i> GenerateIndiceInCircle(const float radius);
   const Parameters parameters_;
   std::unique_ptr<Map> map_;
