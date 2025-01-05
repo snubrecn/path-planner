@@ -44,9 +44,12 @@ void TestCase::SetRandomObstaclePoints(const int num_obstacles,
     return Eigen::Vector2i(flat_index % map_.dimension.x(),
                            flat_index / map_.dimension.x());
   };
+  auto to_flat_index = [this](const Eigen::Vector2i& grid_index) {
+    return grid_index.x() + map_.dimension.x() * grid_index.y();
+  };
   for (auto num = 0; num < num_obstacles; ++num) {
-    auto flat_index = dist(gen);
-    Eigen::Vector2i obstacle_point = to_grid_index(flat_index);
+    auto random_index = dist(gen);
+    Eigen::Vector2i obstacle_point = to_grid_index(random_index);
     if (obstacle_point == start_ || obstacle_point == end_) continue;
     for (auto dx = -inflation_thickness; dx <= inflation_thickness; ++dx) {
       for (auto dy = -inflation_thickness; dy <= inflation_thickness; ++dy) {
@@ -57,6 +60,7 @@ void TestCase::SetRandomObstaclePoints(const int num_obstacles,
             neighbor_position.y() < 0 ||
             neighbor_position.y() >= map_.dimension.y())
           continue;
+        auto flat_index = to_flat_index(neighbor_position);
         map_.grid[flat_index] = false;
         visualization_map_.at<cv::Vec3b>(
             neighbor_position.y(), neighbor_position.x()) = cv::Vec3b(0, 0, 0);

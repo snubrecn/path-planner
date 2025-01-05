@@ -95,7 +95,7 @@ Path ASTARGraphTraverser::GeneratePathByASTAR(const Eigen::Vector2i& start,
     std::cerr << "Path length: " << path.path.size() << std::endl;
     return path;
   }
-  std::cerr << "Path not found by ASTAR";
+  std::cerr << "Path not found by ASTAR\n";
   return path;
 }
 
