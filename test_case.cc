@@ -1,5 +1,7 @@
 #include "test_case.h"
 
+#include <fstream>
+#include <iostream>
 #include <random>
 
 namespace {
@@ -24,6 +26,28 @@ TestCase::TestCase(const int width, const int height,
       clearance_band_visualization_map_.at<cv::Vec3b>(row, col) =
           cv::Vec3b(255, 255, 255);
     }
+  }
+}
+
+void TestCase::SetMapTexture(const std::vector<bool>& map_texture) {
+  if (map_.dimension.x() * map_.dimension.y() != map_texture.size()) {
+    std::cerr << "Given map texture does not match map dimension\n";
+    return;
+  }
+  auto to_grid_index = [this](const int flat_index) {
+    return Eigen::Vector2i(flat_index % map_.dimension.x(),
+                           flat_index / map_.dimension.x());
+  };
+  map_.grid = map_texture;
+  for (auto i = 0; i < static_cast<int>(map_texture.size()); ++i) {
+    if (map_.grid[i]) continue;
+    const Eigen::Vector2i grid_index = to_grid_index(i);
+    visualization_map_.at<cv::Vec3b>(grid_index.y(), grid_index.x()) =
+        cv::Vec3b(0, 0, 0);
+    visit_queue_visualization_map_.at<cv::Vec3b>(
+        grid_index.y(), grid_index.x()) = cv::Vec3b(0, 0, 0);
+    clearance_band_visualization_map_.at<cv::Vec3b>(
+        grid_index.y(), grid_index.x()) = cv::Vec3b(0, 0, 255);
   }
 }
 
@@ -121,6 +145,35 @@ path_planner::Map TestCase::GetMap() { return map_; }
 Eigen::Vector2i TestCase::GetStart() { return start_; }
 
 Eigen::Vector2i TestCase::GetEnd() { return end_; }
+
+void TestCase::SaveMapTexture(const std::string& save_filepath) {
+  std::fstream save_stream;
+  save_stream.open(save_filepath, std::ios::out);
+  save_stream << map_.dimension.x() << " " << map_.dimension.y() << std::endl;
+  for (const auto& freespace : map_.grid) {
+    if (freespace)
+      save_stream << 1 << " ";
+    else
+      save_stream << 0 << " ";
+  }
+  save_stream << "\r\n";
+  save_stream.close();
+}
+
+void TestCase::LoadMapTexture(const std::string& load_filepath) {
+  std::fstream load_stream;
+  load_stream.open(load_filepath, std::ios::in);
+  int width, height;
+  load_stream >> width >> std::ws >> height >> std::ws;
+  std::vector<bool> grid;
+  grid.reserve(width * height);
+  while (!load_stream.eof()) {
+    int value;
+    load_stream >> value >> std::ws;
+    grid.push_back(value == 1);
+  }
+  SetMapTexture(grid);
+}
 
 void TestCase::VisualizeMap(const double resize_factor) {
   for (auto x = -1; x <= 1; ++x) {

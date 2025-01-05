@@ -2,6 +2,7 @@
 #define TEST_CASE_H_
 
 #include <deque>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@ class TestCase {
  public:
   TestCase(const int width, const int height, const Eigen::Vector2i& start,
            const Eigen::Vector2i& end);
+  void SetMapTexture(const std::vector<bool>& map_texture);
   void SetObstaclePoints(const std::vector<Eigen::Vector2i>& obstacle_points);
   void SetRandomObstaclePoints(const int num_obstacles,
                                const int inflation_thickness = 1);
@@ -28,6 +30,8 @@ class TestCase {
   path_planner::Map GetMap();
   Eigen::Vector2i GetStart();
   Eigen::Vector2i GetEnd();
+  void SaveMapTexture(const std::string& save_filepath);
+  void LoadMapTexture(const std::string& load_filepath);
   void VisualizeMap(const double resize_factor = 1.0);
 
  private:
