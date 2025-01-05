@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "graph_traverser_interface.h"
+#include "util.h"
 
 namespace path_planner {
 
@@ -25,11 +26,6 @@ class ASTARGraphTraverser : public GraphTraverserInterface {
     Cell* parent{nullptr};
   };
 
-  struct Neighbor {
-    Eigen::Vector2i move;
-    int move_cost{0};
-  };
-
   struct Compare {
     bool operator()(const Cell& lhs, const Cell& rhs) {
       return lhs.heuristic_cost + lhs.cumulative_cost >
@@ -37,10 +33,9 @@ class ASTARGraphTraverser : public GraphTraverserInterface {
     }
   };
 
-  std::vector<Neighbor> GenerateNeighbors();
   Path GeneratePathByASTAR(const Eigen::Vector2i& start,
                            const Eigen::Vector2i& end);
-  std::vector<Neighbor> neighbors_;
+  std::vector<CostedNeighbor> costed_neighbors_;
   Map map_;
   std::deque<Eigen::Vector2i> visit_queue_;
 };

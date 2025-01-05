@@ -6,11 +6,10 @@
 #include <set>
 #include <unordered_map>
 
-#include "util.h"
-
 namespace path_planner {
 
-ASTARGraphTraverser::ASTARGraphTraverser() : neighbors_(GenerateNeighbors()) {}
+ASTARGraphTraverser::ASTARGraphTraverser()
+    : costed_neighbors_(GenerateCostedNeighbors()) {}
 
 void ASTARGraphTraverser::SetMap(const Map& map) { map_ = map; }
 
@@ -26,21 +25,6 @@ std::optional<Path> ASTARGraphTraverser::GeneratePath(
 
 std::deque<Eigen::Vector2i> ASTARGraphTraverser::GetVisitQueue() {
   return visit_queue_;
-}
-
-std::vector<ASTARGraphTraverser::Neighbor>
-ASTARGraphTraverser::GenerateNeighbors() {
-  std::vector<Neighbor> neighbor_positions;
-  for (auto dx = -1; dx <= 1; ++dx) {
-    for (auto dy = -1; dy <= 1; ++dy) {
-      if (dx == 0 && dy == 0) continue;
-      Neighbor neighbor_position;
-      neighbor_position.move = Eigen::Vector2i(dx, dy);
-      neighbor_position.move_cost = (dx == 0 || dy == 0) ? 10 : 14;
-      neighbor_positions.push_back(neighbor_position);
-    }
-  }
-  return neighbor_positions;
 }
 
 Path ASTARGraphTraverser::GeneratePathByASTAR(const Eigen::Vector2i& start,
@@ -71,8 +55,8 @@ Path ASTARGraphTraverser::GeneratePathByASTAR(const Eigen::Vector2i& start,
 
     const auto& current_position = current_cell.position;
 
-    for (const auto& neighbor : neighbors_) {
-      auto neighbor_position = current_position + neighbor.move;
+    for (const auto& costed_neighbor : costed_neighbors_) {
+      auto neighbor_position = current_position + costed_neighbor.position;
       auto neighbor_flat_index = ToFlatIndex(neighbor_position, width);
       if (closed_list.count(neighbor_flat_index) ||
           !IsWithinMap(neighbor_position, map_.dimension) ||
@@ -83,9 +67,9 @@ Path ASTARGraphTraverser::GeneratePathByASTAR(const Eigen::Vector2i& start,
       neighbor_cell.position = neighbor_position;
       neighbor_cell.heuristic_cost = 10 * (end - neighbor_position).lpNorm<1>();
       if (neighbor_cell.cumulative_cost >
-          current_cell.cumulative_cost + neighbor.move_cost) {
+          current_cell.cumulative_cost + costed_neighbor.cost) {
         neighbor_cell.cumulative_cost =
-            current_cell.cumulative_cost + neighbor.move_cost;
+            current_cell.cumulative_cost + costed_neighbor.cost;
         neighbor_cell.parent = &cost_map[current_index];
         prioritized_open_list.push(neighbor_cell);
       }
