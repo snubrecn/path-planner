@@ -2,6 +2,7 @@
 #define TEST_CASE_H_
 
 #include <deque>
+#include <utility>
 #include <vector>
 
 #include "Eigen/Geometry"
@@ -19,6 +20,10 @@ class TestCase {
                                const int inflation_thickness = 1);
   void SetPath(const std::deque<Eigen::Vector2i>& path);
   void SetVisitQueue(const std::deque<Eigen::Vector2i>& visit_queue);
+  void SetClearanceBandCells(
+      const std::vector<std::pair<Eigen::Vector2i, float>>&
+          clearance_band_cells,
+      const float max_clearance);
 
   path_planner::Map GetMap();
   Eigen::Vector2i GetStart();
@@ -31,6 +36,7 @@ class TestCase {
   path_planner::Map map_;
   cv::Mat visualization_map_;
   cv::Mat visit_queue_visualization_map_;
+  cv::Mat clearance_band_visualization_map_;
 };
 
 };  // namespace test_case

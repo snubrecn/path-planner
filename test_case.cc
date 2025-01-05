@@ -15,10 +15,13 @@ TestCase::TestCase(const int width, const int height,
   map_.grid.assign(width * height, true);
   visualization_map_ = cv::Mat(height, width, CV_8UC3);
   visit_queue_visualization_map_ = cv::Mat(height, width, CV_8UC3);
+  clearance_band_visualization_map_ = cv::Mat(height, width, CV_8UC3);
   for (auto col = 0; col < width; ++col) {
     for (auto row = 0; row < height; ++row) {
       visualization_map_.at<cv::Vec3b>(row, col) = cv::Vec3b(255, 255, 255);
       visit_queue_visualization_map_.at<cv::Vec3b>(row, col) =
+          cv::Vec3b(255, 255, 255);
+      clearance_band_visualization_map_.at<cv::Vec3b>(row, col) =
           cv::Vec3b(255, 255, 255);
     }
   }
@@ -33,6 +36,8 @@ void TestCase::SetObstaclePoints(
         cv::Vec3b(0, 0, 0);
     visit_queue_visualization_map_.at<cv::Vec3b>(
         obstacle_point.y(), obstacle_point.x()) = cv::Vec3b(0, 0, 0);
+    clearance_band_visualization_map_.at<cv::Vec3b>(
+        obstacle_point.y(), obstacle_point.x()) = cv::Vec3b(0, 0, 255);
   }
 }
 
@@ -66,6 +71,9 @@ void TestCase::SetRandomObstaclePoints(const int num_obstacles,
             neighbor_position.y(), neighbor_position.x()) = cv::Vec3b(0, 0, 0);
         visit_queue_visualization_map_.at<cv::Vec3b>(
             neighbor_position.y(), neighbor_position.x()) = cv::Vec3b(0, 0, 0);
+        clearance_band_visualization_map_.at<cv::Vec3b>(neighbor_position.y(),
+                                                        neighbor_position.x()) =
+            cv::Vec3b(0, 0, 255);
       }
     }
   }
@@ -95,6 +103,19 @@ void TestCase::SetVisitQueue(const std::deque<Eigen::Vector2i>& visit_queue) {
   }
 }
 
+void TestCase::SetClearanceBandCells(
+    const std::vector<std::pair<Eigen::Vector2i, float>>& clearance_band_cells,
+    const float max_clearance) {
+  for (const auto& position_with_distance : clearance_band_cells) {
+    const Eigen::Vector2i& position = position_with_distance.first;
+    const auto distance = position_with_distance.second;
+    const uint8_t intensity =
+        static_cast<uint8_t>(255.0 * distance / max_clearance);
+    clearance_band_visualization_map_.at<cv::Vec3b>(
+        position.y(), position.x()) = cv::Vec3b(intensity, 0, 0);
+  }
+}
+
 path_planner::Map TestCase::GetMap() { return map_; }
 
 Eigen::Vector2i TestCase::GetStart() { return start_; }
@@ -117,13 +138,18 @@ void TestCase::VisualizeMap(const double resize_factor) {
 
   cv::Mat image;
   cv::hconcat(visualization_map_, visit_queue_visualization_map_, image);
+  cv::Mat clearance_band_image = clearance_band_visualization_map_;
   if (resize_factor != 1.0) {
     cv::resize(
         image, image,
         cv::Size(image.cols * resize_factor, image.rows * resize_factor));
+    cv::resize(clearance_band_image, clearance_band_image,
+               cv::Size(clearance_band_image.cols * resize_factor,
+                        clearance_band_image.rows * resize_factor));
   }
 
   cv::imshow("path_planning_result", image);
+  cv::imshow("clearance band", clearance_band_image);
   cv::waitKey(0);
 }
 
