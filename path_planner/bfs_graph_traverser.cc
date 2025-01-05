@@ -33,6 +33,8 @@ Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
   std::vector<Cell> cell_grid(width * height);
   std::deque<Eigen::Vector2i> queue;
 
+  const auto& neighbor_positions = GenerateNeighborPositions();
+
   queue.push_back(start);
   const auto start_index = ToFlatIndex(start, width);
   cell_grid[start_index].position = start;
@@ -46,20 +48,20 @@ Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
     visit_queue_.push_back(pos);
     const auto flat_index = ToFlatIndex(pos, width);
 
-    auto neighbor_positions = GenerateNeighborPositions(pos);
     for (const auto& neighbor_position : neighbor_positions) {
-      if (!IsWithinMap(neighbor_position, map_.dimension)) continue;
-      const auto neighbor_index = ToFlatIndex(neighbor_position, width);
-      if (cell_grid[neighbor_index].visit || !map_.grid[neighbor_index])
+      const Eigen::Vector2i bfs_neighbor_position = pos + neighbor_position;
+      if (!IsWithinMap(bfs_neighbor_position, map_.dimension)) continue;
+      const auto bfs_neighbor_index = ToFlatIndex(bfs_neighbor_position, width);
+      if (cell_grid[bfs_neighbor_index].visit || !map_.grid[bfs_neighbor_index])
         continue;
-      cell_grid[neighbor_index].visit = true;
-      cell_grid[neighbor_index].parent = &cell_grid[flat_index];
-      cell_grid[neighbor_index].position = neighbor_position;
-      if (neighbor_position == end) {
+      cell_grid[bfs_neighbor_index].visit = true;
+      cell_grid[bfs_neighbor_index].parent = &cell_grid[flat_index];
+      cell_grid[bfs_neighbor_index].position = bfs_neighbor_position;
+      if (bfs_neighbor_position == end) {
         path_found = true;
         break;
       }
-      queue.push_back(neighbor_position);
+      queue.push_back(bfs_neighbor_position);
     }
     if (path_found) break;
   }

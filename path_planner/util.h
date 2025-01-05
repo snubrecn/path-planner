@@ -22,13 +22,12 @@ inline Eigen::Vector2i ToGridIndex(const int flat_index, const int width) {
   return Eigen::Vector2i(flat_index % width, flat_index / width);
 }
 
-std::vector<Eigen::Vector2i> GenerateNeighborPositions(
-    const Eigen::Vector2i& center) {
+std::vector<Eigen::Vector2i> GenerateNeighborPositions() {
   std::vector<Eigen::Vector2i> neighbor_positions;
   for (auto dx = -1; dx <= 1; ++dx) {
     for (auto dy = -1; dy <= 1; ++dy) {
       if (dx == 0 && dy == 0) continue;
-      neighbor_positions.push_back(center + Eigen::Vector2i(dx, dy));
+      neighbor_positions.push_back(Eigen::Vector2i(dx, dy));
     }
   }
   return neighbor_positions;
