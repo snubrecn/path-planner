@@ -4,6 +4,8 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "Eigen/Geometry"
@@ -15,6 +17,7 @@ enum class Mode { BFS, ASTAR, DSTAR };
 
 struct Parameters {
   Mode mode{Mode::BFS};
+  float max_clearance{10.f};
 };
 
 class PathPlanner {
@@ -24,11 +27,23 @@ class PathPlanner {
   std::optional<Path> GeneratePath(const Eigen::Vector2i& start,
                                    const Eigen::Vector2i& end);
   std::deque<Eigen::Vector2i> GetVisitQueue();
+  std::vector<std::pair<Eigen::Vector2i, float>> GetClearanceBandCells();
 
  private:
+  struct PositionHash {
+    uint64_t operator()(const Eigen::Vector2i& position) const {
+      return static_cast<uint64_t>(position.x()) << 32 |
+             static_cast<uint64_t>(position.y());
+    }
+  };
+  std::unordered_map<Eigen::Vector2i, float, PositionHash>
+  GenerateClearanceBand(const Path& path, const float max_clearance);
+  std::vector<Eigen::Vector2i> GenerateIndiceInCircle(const float radius);
   const Parameters parameters_;
   std::unique_ptr<Map> map_;
   std::unique_ptr<GraphTraverserInterface> graph_traverser_;
+  std::unordered_map<Eigen::Vector2i, float, PositionHash>
+      clearance_band_cells_;
 };
 
 }  // namespace path_planner

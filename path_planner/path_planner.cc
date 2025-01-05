@@ -33,12 +33,89 @@ std::optional<Path> PathPlanner::GeneratePath(const Eigen::Vector2i& start,
   }
 
   graph_traverser_->SetMap(*map_);
-  return graph_traverser_->GeneratePath(start, end);
+  path = graph_traverser_->GeneratePath(start, end);
+  if (path.has_value())
+    clearance_band_cells_ =
+        GenerateClearanceBand(path.value(), parameters_.max_clearance);
+  return path;
 }
 
 std::deque<Eigen::Vector2i> PathPlanner::GetVisitQueue() {
   if (graph_traverser_) return graph_traverser_->GetVisitQueue();
   return {};
+}
+
+std::vector<std::pair<Eigen::Vector2i, float>>
+PathPlanner::GetClearanceBandCells() {
+  if (clearance_band_cells_.size() == 0) return {};
+  std::vector<std::pair<Eigen::Vector2i, float>> clearance_band_cells;
+  clearance_band_cells.reserve(clearance_band_cells_.size());
+  const auto width = map_->dimension.x();
+  for (const auto& [position, distance] : clearance_band_cells_)
+    clearance_band_cells.push_back(std::make_pair(position, distance));
+
+  return clearance_band_cells;
+}
+
+std::unordered_map<Eigen::Vector2i, float, PathPlanner::PositionHash>
+PathPlanner::GenerateClearanceBand(const Path& path,
+                                   const float max_clearance) {
+  std::unordered_map<Eigen::Vector2i, float, PositionHash> clearance_band_cells;
+
+  const auto& neighbor_positions = GenerateNeighborPositions();
+  const auto& indice_in_circle = GenerateIndiceInCircle(max_clearance);
+  const auto& grid = map_->grid;
+  const auto& map_dimension = map_->dimension;
+  const auto& map_width = map_->dimension.x();
+
+  for (const auto& waypoint : path.path) {
+    for (const auto& index_in_circle : indice_in_circle) {
+      const Eigen::Vector2i current_position = waypoint + index_in_circle;
+      if (!IsWithinMap(current_position, map_dimension)) continue;
+      if (!grid[ToFlatIndex(current_position, map_width)]) {
+        std::deque<Eigen::Vector2i> bfs;
+        bfs.push_back(current_position);
+        while (!bfs.empty()) {
+          const Eigen::Vector2i bfs_current_position = bfs.front();
+          bfs.pop_front();
+          for (const auto& neighbor_position : neighbor_positions) {
+            const Eigen::Vector2i bfs_neighbor_position =
+                bfs_current_position + neighbor_position;
+            if ((bfs_neighbor_position - waypoint).cast<float>().norm() >
+                max_clearance)
+              continue;
+            if (!IsWithinMap(bfs_current_position, map_dimension)) continue;
+            if (!grid[ToFlatIndex(bfs_neighbor_position, map_width)]) continue;
+            if (clearance_band_cells.count(bfs_neighbor_position) == 0)
+              clearance_band_cells[bfs_neighbor_position] = max_clearance;
+            const float distance =
+                (bfs_neighbor_position - current_position).cast<float>().norm();
+            if (clearance_band_cells[bfs_neighbor_position] > distance) {
+              clearance_band_cells[bfs_neighbor_position] = distance;
+              bfs.push_back(bfs_neighbor_position);
+            }
+          }
+        }
+      } else {
+        if (clearance_band_cells.count(current_position)) continue;
+        clearance_band_cells[current_position] = max_clearance;
+      }
+    }
+  }
+  return clearance_band_cells;
+}
+
+std::vector<Eigen::Vector2i> PathPlanner::GenerateIndiceInCircle(
+    const float radius) {
+  const int radius_i = static_cast<int>(radius);
+  std::vector<Eigen::Vector2i> indice_in_circle;
+  for (auto dx = -radius_i; dx <= radius_i; ++dx) {
+    for (auto dy = -radius_i; dy <= radius_i; ++dy) {
+      if (dx * dx + dy * dy > radius * radius) continue;
+      indice_in_circle.push_back(Eigen::Vector2i(dx, dy));
+    }
+  }
+  return indice_in_circle;
 }
 
 };  // namespace path_planner
