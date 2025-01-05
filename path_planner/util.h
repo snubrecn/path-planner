@@ -8,8 +8,12 @@
 namespace path_planner {
 namespace {
 
-int ToFlatIndex(const Eigen::Vector2i& pos, const int width) {
-  return pos.x() + pos.y() * width;
+inline int ToFlatIndex(const Eigen::Vector2i& grid_index, const int width) {
+  return grid_index.x() + grid_index.y() * width;
+}
+
+inline Eigen::Vector2i ToGridIndex(const int flat_index, const int width) {
+  return Eigen::Vector2i(flat_index % width, flat_index / width);
 }
 
 std::vector<Eigen::Vector2i> GenerateNeighborPositions(
@@ -24,9 +28,10 @@ std::vector<Eigen::Vector2i> GenerateNeighborPositions(
   return neighbor_positions;
 }
 
-bool IsWithinMap(const Eigen::Vector2i& pos, const Eigen::Vector2i& dimension) {
-  return pos.x() >= 0 && pos.x() < dimension.x() && pos.y() >= 0 &&
-         pos.y() < dimension.y();
+inline bool IsWithinMap(const Eigen::Vector2i& grid_index,
+                        const Eigen::Vector2i& dimension) {
+  return grid_index.x() >= 0 && grid_index.x() < dimension.x() &&
+         grid_index.y() >= 0 && grid_index.y() < dimension.y();
 }
 
 }  // namespace
