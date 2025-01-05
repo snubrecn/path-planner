@@ -120,7 +120,7 @@ void TestCase::VisualizeMap(const double resize_factor) {
   if (resize_factor != 1.0) {
     cv::resize(
         image, image,
-        cv::Size(image.rows * resize_factor, image.cols * resize_factor));
+        cv::Size(image.cols * resize_factor, image.rows * resize_factor));
   }
 
   cv::imshow("path_planning_result", image);
