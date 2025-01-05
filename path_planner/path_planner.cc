@@ -1,5 +1,8 @@
 #include "path_planner.h"
 
+#include <chrono>
+#include <iostream>
+
 #include "astar_graph_traverser.h"
 #include "bfs_graph_traverser.h"
 #include "dstar_graph_traverser.h"
@@ -17,6 +20,13 @@ void PathPlanner::SetMap(const Map& map) {
 std::optional<Path> PathPlanner::GeneratePath(const Eigen::Vector2i& start,
                                               const Eigen::Vector2i& end) {
   if (map_ == nullptr) return std::nullopt;
+  const auto map_width = map_->dimension.x();
+  if (!map_->grid[ToFlatIndex(start, map_width)] ||
+      !map_->grid[ToFlatIndex(end, map_width)]) {
+    std::cerr << "Either start or end is/are located on obstacle\n";
+    return std::nullopt;
+  }
+
   std::optional<Path> path;
   switch (parameters_.mode) {
     case Mode::BFS:
@@ -33,10 +43,20 @@ std::optional<Path> PathPlanner::GeneratePath(const Eigen::Vector2i& start,
   }
 
   graph_traverser_->SetMap(*map_);
+  auto ts = std::chrono::steady_clock::now();
   path = graph_traverser_->GeneratePath(start, end);
-  if (path.has_value())
+  auto te = std::chrono::steady_clock::now();
+  auto duration = (te - ts).count() * 1e-6;
+  std::cerr << "Path generation took " << duration << " ms\n";
+
+  if (path.has_value()) {
+    auto ts = std::chrono::steady_clock::now();
     clearance_band_cells_ =
         GenerateClearanceBand(path.value(), parameters_.max_clearance);
+    auto te = std::chrono::steady_clock::now();
+    auto duration = (te - ts).count() * 1e-6;
+    std::cerr << "Clearance band generation took " << duration << " ms\n";
+  }
   return path;
 }
 
