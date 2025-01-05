@@ -6,7 +6,6 @@
 #include "Eigen/Geometry"
 
 namespace path_planner {
-namespace graph_traverser {
 namespace {
 
 int ToFlatIndex(const Eigen::Vector2i& pos, const int width) {
@@ -31,7 +30,6 @@ bool IsWithinMap(const Eigen::Vector2i& pos, const Eigen::Vector2i& dimension) {
 }
 
 }  // namespace
-}  // namespace graph_traverser
 }  // namespace path_planner
 
 #endif

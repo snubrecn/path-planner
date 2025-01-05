@@ -4,8 +4,6 @@
 #include "graph_traverser_interface.h"
 
 namespace path_planner {
-namespace graph_traverser {
-namespace dstar {
 
 class DSTARGraphTraverser : public GraphTraverserInterface {
  public:
@@ -16,8 +14,6 @@ class DSTARGraphTraverser : public GraphTraverserInterface {
   std::deque<Eigen::Vector2i> GetVisitQueue() override;
 };
 
-}  // namespace dstar
-}  // namespace graph_traverser
 }  // namespace path_planner
 
 #endif

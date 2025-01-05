@@ -3,8 +3,6 @@
 #include "util.h"
 
 namespace path_planner {
-namespace graph_traverser {
-namespace dstar {
 
 DSTARGraphTraverser::DSTARGraphTraverser() {}
 
@@ -17,6 +15,4 @@ std::optional<Path> DSTARGraphTraverser::GeneratePath(
 
 std::deque<Eigen::Vector2i> DSTARGraphTraverser::GetVisitQueue() { return {}; }
 
-}  // namespace dstar
-}  // namespace graph_traverser
 };  // namespace path_planner

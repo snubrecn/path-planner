@@ -4,14 +4,6 @@
 #include "graph_traverser_interface.h"
 
 namespace path_planner {
-namespace graph_traverser {
-namespace bfs {
-
-struct Cell {
-  Eigen::Vector2i position;
-  bool visit{false};
-  Cell* parent{nullptr};
-};
 
 class BFSGraphTraverser : public GraphTraverserInterface {
  public:
@@ -22,14 +14,17 @@ class BFSGraphTraverser : public GraphTraverserInterface {
   std::deque<Eigen::Vector2i> GetVisitQueue() override;
 
  private:
+  struct Cell {
+    Eigen::Vector2i position;
+    bool visit{false};
+    Cell* parent{nullptr};
+  };
   Path GeneratePathByBFS(const Eigen::Vector2i& start,
                          const Eigen::Vector2i& end);
   Map map_;
   std::deque<Eigen::Vector2i> visit_queue_;
 };
 
-}  // namespace bfs
-}  // namespace graph_traverser
 }  // namespace path_planner
 
 #endif

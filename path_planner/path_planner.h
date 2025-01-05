@@ -7,20 +7,9 @@
 #include <vector>
 
 #include "Eigen/Geometry"
-#include "graph_traverser/graph_traverser_interface.h"
+#include "graph_traverser_interface.h"
 
 namespace path_planner {
-
-struct Map {
-  Eigen::Vector2i dimension;
-  std::vector<bool> grid;  // true: freespace, false: occupied
-};
-
-struct Path {
-  Eigen::Vector2i start;
-  Eigen::Vector2i destination;
-  std::deque<Eigen::Vector2i> path;
-};
 
 enum class Mode { BFS, ASTAR, DSTAR };
 
@@ -38,8 +27,8 @@ class PathPlanner {
 
  private:
   const Parameters parameters_;
-  std::unique_ptr<graph_traverser::Map> map_;
-  std::unique_ptr<graph_traverser::GraphTraverserInterface> graph_traverser_;
+  std::unique_ptr<Map> map_;
+  std::unique_ptr<GraphTraverserInterface> graph_traverser_;
 };
 
 }  // namespace path_planner

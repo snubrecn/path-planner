@@ -9,8 +9,6 @@
 #include "util.h"
 
 namespace path_planner {
-namespace graph_traverser {
-namespace astar {
 
 ASTARGraphTraverser::ASTARGraphTraverser() : neighbors_(GenerateNeighbors()) {}
 
@@ -30,7 +28,8 @@ std::deque<Eigen::Vector2i> ASTARGraphTraverser::GetVisitQueue() {
   return visit_queue_;
 }
 
-std::vector<Neighbor> ASTARGraphTraverser::GenerateNeighbors() {
+std::vector<ASTARGraphTraverser::Neighbor>
+ASTARGraphTraverser::GenerateNeighbors() {
   std::vector<Neighbor> neighbor_positions;
   for (auto dx = -1; dx <= 1; ++dx) {
     for (auto dy = -1; dy <= 1; ++dy) {
@@ -116,6 +115,4 @@ Path ASTARGraphTraverser::GeneratePathByASTAR(const Eigen::Vector2i& start,
   return path;
 }
 
-}  // namespace astar
-}  // namespace graph_traverser
 };  // namespace path_planner

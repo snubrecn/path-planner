@@ -5,8 +5,6 @@
 #include "util.h"
 
 namespace path_planner {
-namespace graph_traverser {
-namespace bfs {
 
 BFSGraphTraverser::BFSGraphTraverser() {}
 
@@ -83,6 +81,4 @@ Path BFSGraphTraverser::GeneratePathByBFS(const Eigen::Vector2i& start,
   return path;
 }
 
-}  // namespace bfs
-}  // namespace graph_traverser
 };  // namespace path_planner

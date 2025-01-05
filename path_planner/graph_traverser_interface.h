@@ -8,7 +8,6 @@
 #include "Eigen/Geometry"
 
 namespace path_planner {
-namespace graph_traverser {
 
 struct Map {
   Eigen::Vector2i dimension;
@@ -29,7 +28,7 @@ class GraphTraverserInterface {
                                            const Eigen::Vector2i& end) = 0;
   virtual std::deque<Eigen::Vector2i> GetVisitQueue() = 0;
 };
-}  // namespace graph_traverser
+
 }  // namespace path_planner
 
 #endif
