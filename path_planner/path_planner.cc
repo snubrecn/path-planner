@@ -33,16 +33,7 @@ std::optional<Path> PathPlanner::GeneratePath(const Eigen::Vector2i& start,
   }
 
   graph_traverser_->SetMap(*map_);
-  path = graph_traverser_->GeneratePath(start, end);
-
-  if (path.has_value()) {
-    Path return_path;
-    return_path.destination = path->destination;
-    return_path.start = path->start;
-    return_path.path = path->path;
-    return return_path;
-  }
-  return std::nullopt;
+  return graph_traverser_->GeneratePath(start, end);
 }
 
 std::deque<Eigen::Vector2i> PathPlanner::GetVisitQueue() {
